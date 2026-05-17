@@ -46,12 +46,14 @@ export function useCards({
 
   const fetchCards = useCallback(async (): Promise<FlashCard[]> => {
     const cards = await getCardsForQuiz({ folderId, limit, order, minWrongCount, startCardId });
-    cards.forEach((card) => {
-      if (card.imageUrl) {
-        const img = new Image();
-        img.src = card.imageUrl;
-      }
-    });
+    if (typeof window !== 'undefined') {
+      cards.forEach((card) => {
+        if (card.imageUrl) {
+          const img = new Image();
+          img.src = card.imageUrl;
+        }
+      });
+    }
     return cards;
   }, [folderId, limit, order, minWrongCount, startCardId]);
 
