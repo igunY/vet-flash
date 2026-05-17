@@ -1,9 +1,13 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '';
+
+// 環境変数が未設定の場合は null（モジュール読み込み時にクラッシュしない）
+export const supabase: SupabaseClient | null =
+  supabaseUrl && supabaseAnonKey
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null;
 
 /**
  * 匿名セッションを確保してユーザーIDを返す。
@@ -11,6 +15,8 @@ export const supabase = createClient(
  * 環境変数が未設定の場合は null を返す（同期スキップ）。
  */
 export async function ensureSession(): Promise<string | null> {
+  if (!supabase) return null;
+
   const { data: { session } } = await supabase.auth.getSession();
   if (session) return session.user.id;
 

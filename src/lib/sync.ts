@@ -33,6 +33,7 @@ export async function syncToSupabase(): Promise<void> {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '';
   if (!url || url.includes('your_') || !key || key.includes('your_')) return;
 
+  if (!supabase) return;
   if (running) return;
   running = true;
 
